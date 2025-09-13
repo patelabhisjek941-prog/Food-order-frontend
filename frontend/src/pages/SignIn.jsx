@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import { FcGoogle } from "react-icons/fc";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { Link } from "react-router-dom";
 import axios from "axios";
-import { serverUrl } from "../App";
 import { signInWithPopup } from "firebase/auth";
-import { auth, provider } from "../../utils/firebase";
+import { useState } from "react";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { FcGoogle } from "react-icons/fc";
 import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
+import { auth, provider } from "../../utils/firebase";
+import { serverUrl } from "../App";
 import { setUserData } from "../redux/userSlice";
 
 export default function SignIn() {
@@ -19,7 +19,7 @@ export default function SignIn() {
   const hoverColor = "#e64323"; // darker orange
   const bgColor = "#fff9f6"; // light off-white background
   const borderColor = "#ddd";
-const dispatch=useDispatch()
+  const dispatch = useDispatch()
   const handleSignIn = async () => {
     try {
       const result = await axios.post(
@@ -27,7 +27,7 @@ const dispatch=useDispatch()
         { email, password },
         { withCredentials: true }
       );
-     dispatch(setUserData(result.data))
+      dispatch(setUserData(result.data))
     } catch (error) {
       console.log(error);
     }
@@ -37,11 +37,11 @@ const dispatch=useDispatch()
     try {
       const result = await signInWithPopup(auth, provider);
       console.log(result);
-      if(result){
-        const {data}=await axios.post(`${serverUrl}/api/auth/googleauth`,{
-          email:result.user.email,
-        },{withCredentials:true})
-         dispatch(setUserData(data))
+      if (result) {
+        const { data } = await axios.post(`${serverUrl}/api/auth/googleauth`, {
+          email: result.user.email,
+        }, { withCredentials: true })
+        dispatch(setUserData(data))
       }
 
     } catch (error) {
@@ -60,7 +60,7 @@ const dispatch=useDispatch()
       >
         {/* Brand Heading */}
         <h1 className="text-3xl font-bold mb-2" style={{ color: primaryColor }}>
-          Vingo
+          Food Order & Delivery
         </h1>
         <p className="text-gray-600 mb-8">
           Welcome back! Please sign in to continue enjoying delicious food
@@ -117,7 +117,7 @@ const dispatch=useDispatch()
 
         {/* Sign In Button */}
         <button
-          className="w-full font-semibold py-2 rounded-lg transition duration-200"
+          className="cursor-pointer w-full font-semibold py-2 rounded-lg transition duration-200"
           style={{ backgroundColor: primaryColor, color: "white" }}
           onMouseOver={(e) =>
             (e.currentTarget.style.backgroundColor = hoverColor)
@@ -132,7 +132,7 @@ const dispatch=useDispatch()
 
         {/* Google Auth */}
         <button
-          className="w-full mt-4 flex items-center justify-center gap-2 border rounded-lg px-4 py-2 transition duration-200"
+          className="cursor-pointer w-full mt-4 flex items-center justify-center gap-2 border rounded-lg px-4 py-2 transition duration-200"
           style={{ borderColor: borderColor }}
           onClick={handleGoogleAuth}
         >

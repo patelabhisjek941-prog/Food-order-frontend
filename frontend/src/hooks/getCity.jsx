@@ -5,6 +5,7 @@ import { setCity } from "../redux/userSlice";
 function getCity() {
   const dispatch = useDispatch();
 
+
   useEffect(() => {
     if (!("geolocation" in navigator)) {
       console.log("Geolocation is not supported by your browser.");
@@ -19,11 +20,12 @@ function getCity() {
         console.log(`Latitude: ${lat}, Longitude: ${lon}`);
 
         try {
-          // 🔑 apna Geoapify API key yaha lagao
-          const apiKey = "812d749999de462e9df7ca070383975b";
+          // 🔑Geoapify API key
+          const apiKey =  import.meta.env.VITE_GEOAPIKEY;
 
           const response = await fetch(
             `https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lon}&apiKey=${apiKey}`
+            
           );
           const data = await response.json();
 

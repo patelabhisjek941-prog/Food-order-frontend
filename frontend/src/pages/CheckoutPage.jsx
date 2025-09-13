@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
 import axios from "axios";
-import { MdDeliveryDining, MdKeyboardBackspace } from "react-icons/md";
-import { FaMapMarkerAlt, FaCreditCard, FaMobileAlt, FaSearch, FaCrosshairs } from "react-icons/fa";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import { useEffect, useState } from "react";
+import { FaCreditCard, FaCrosshairs, FaMapMarkerAlt, FaMobileAlt, FaSearch } from "react-icons/fa";
+import { MdDeliveryDining, MdKeyboardBackspace } from "react-icons/md";
+import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { serverUrl } from "../App";
 import useCurrentLocation from "../hooks/useCurrentLocation";
@@ -36,7 +36,7 @@ export default function CheckoutPage() {
     useCurrentLocation();
 
   const [method, setMethod] = useState("cod");
-  const [searchText, setSearchText] = useState(""); // 👈 input ke liye
+  const [searchText, setSearchText] = useState(""); // input ke liye
   const navigate = useNavigate();
 
   // address hook se aaya → input me sync karo
@@ -48,7 +48,7 @@ export default function CheckoutPage() {
   const deliveryFee = subtotal > 500 ? 0 : 40;
   const total = subtotal + deliveryFee;
 
-  // 🔥 Forward Geocoding (Address → LatLng via Geoapify)
+  // Forward Geocoding (Address → LatLng via Geoapify)
   const forwardGeocode = async (addr) => {
     if (typeof addr !== "string" || !addr.trim()) return;
     try {
@@ -111,10 +111,10 @@ export default function CheckoutPage() {
 
   const openRazorpay = (orderId, razorpayOrder) => {
     const options = {
-      key:"rzp_test_R8OFNIx0dn0Ggd", // Razorpay key id from env
+      key:import.meta.env.VITE_RAZORPAY_KEY_ID, // Razorpay key id from env
       amount: razorpayOrder?.amount, // in paise
       currency: "INR",
-      name: "Vingo",
+      name: "Food order & Delivery",
       description: "Order Payment",
       order_id: razorpayOrder?.id,
       handler: async function (response) {

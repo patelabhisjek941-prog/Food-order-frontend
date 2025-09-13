@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 import { FaLocationDot } from "react-icons/fa6";
-import { useDispatch, useSelector } from 'react-redux';
+import { FiPlus } from 'react-icons/fi';
 import { IoIosSearch } from "react-icons/io";
 import { LuShoppingCart } from "react-icons/lu";
 import { RxCross2 } from "react-icons/rx";
-import { serverUrl } from '../App';
-import axios from 'axios';
-import { setSearchItems, setShop, setUserData } from '../redux/userSlice';
-import { FiPlus } from 'react-icons/fi';
-import { useNavigate } from 'react-router-dom';
 import { TbReceipt2 } from "react-icons/tb";
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { serverUrl } from '../App';
+import { setSearchItems, setShop, setUserData } from '../redux/userSlice';
 
 function Nav() {
-    const { city, userData, cartItems,pendingOrdersCount } = useSelector(state => state.user);
+    const { city, userData, cartItems, pendingOrdersCount } = useSelector(state => state.user);
     const [showSearch, setShowSearch] = useState(false);
     const [showInfo, setShowInfo] = useState(false);
     const navigate = useNavigate();
@@ -77,7 +77,7 @@ function Nav() {
             )}
 
             {/* Logo */}
-            <h1 className="text-3xl font-bold mb-2 text-[#ff4d2d]">Vingo</h1>
+            <h1 className="text-3xl font-bold mb-2 text-[#ff4d2d]">Food Order & Delivery</h1>
 
             {/* Desktop Search Box */}
             {userData?.role === "user" && (
@@ -94,7 +94,7 @@ function Nav() {
                             type="text"
                             placeholder="search delicious food..."
                             className="px-[10px] text-gray-700 outline-0 w-full"
-                             onChange={(e) => setInput(e.target.value)}
+                            onChange={(e) => setInput(e.target.value)}
                             value={input}
                         />
                     </div>
@@ -147,7 +147,7 @@ function Nav() {
                         >
                             <TbReceipt2 className="w-[22px] h-[22px]" />
                             <span className="absolute -right-1 -top-1 text-[10px] font-bold text-white bg-[#ff4d2d] rounded-full px-[4px] py-[0px]">
-                              {pendingOrdersCount}
+                                {pendingOrdersCount}
                             </span>
                         </div>
                     </>
@@ -183,15 +183,29 @@ function Nav() {
                 {/* Profile icon + Popup */}
                 <div className="relative overflow-visible">
                     <div
-                        className="w-[40px] h-[40px] rounded-full flex items-center justify-center bg-[#ff4d2d] text-white text-[18px] shadow-xl font-semibold cursor-pointer"
+                        className="w-[50px] h-[40px] rounded-full flex items-center justify-center bg-[#ff4d2d] text-white text-[18px] shadow-xl font-semibold cursor-pointer"
                         onClick={() => setShowInfo(prev => !prev)}
                     >
                         {userData?.fullName?.slice(0, 1)}
                     </div>
 
                     {showInfo && (
-                        <div className="fixed top-[80px] right-[10px] md:right-[10%] lg:right-[25%] w-[180px] bg-white shadow-2xl rounded-xl p-[20px] flex flex-col gap-[10px] z-[9999]">
-                            <div className="text-[17px] font-semibold">{userData?.fullName}</div>
+                        <div className="fixed top-[80px] right-[10px] md:right-[10%] lg:right-[25%] w-[200px] bg-white shadow-2xl rounded-xl p-[20px] flex flex-col gap-[10px] z-[9999]">
+                            <div className="text-[25px] font-semibold">{userData?.fullName}</div>
+
+                            {/* Email */}
+                            {userData?.email && (
+                                <div className="text-sm text-gray-600 break-words">
+                                    {userData.email}
+                                </div>
+                            )}
+
+                            {/* Phone */}
+                            {userData?.mobile && (
+                                <div className=" text-sm text-gray-600">
+                                        {userData.mobile}
+                                </div>
+                            )}
 
                             {/* Mobile: My Orders */}
                             {userData?.role === "user" && (

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import axios from "axios";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios"
 import { serverUrl } from "../App";
 export default function ForgotPassword() {
   const [step, setStep] = useState(1);
@@ -8,42 +8,42 @@ export default function ForgotPassword() {
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-const navigate=useNavigate()
+  const navigate = useNavigate()
   // Professional Food Delivery Theme
   const primaryColor = "#ff4d2d"; // rich orange
   const hoverColor = "#e64323"; // darker orange
   const bgColor = "#fff9f6"; // light off-white background
   const borderColor = "#ddd";
 
- const handleSendOtp=async () => {
-  try {
-    const result=await axios.post(`${serverUrl}/api/auth/sendotp`,{email},{withCredentials:true})
- setStep(2)
-  } catch (error) {
-    console.log(error)
+  const handleSendOtp = async () => {
+    try {
+      const result = await axios.post(`${serverUrl}/api/auth/sendotp`, { email }, { withCredentials: true })
+      setStep(2)
+    } catch (error) {
+      console.log(error)
+    }
   }
- }
-  const handleVerifyOtp=async () => {
-  try {
-    const result=await axios.post(`${serverUrl}/api/auth/verifyotp`,{email,otp},{withCredentials:true}) 
- setStep(3)
-  } catch (error) {
-    console.log(error)
+  const handleVerifyOtp = async () => {
+    try {
+      const result = await axios.post(`${serverUrl}/api/auth/verifyotp`, { email, otp }, { withCredentials: true })
+      setStep(3)
+    } catch (error) {
+      console.log(error)
+    }
   }
- }
- const handleResetPassword=async () => {
-  if(newPassword==confirmPassword){
- try {
-    const result=await axios.post(`${serverUrl}/api/auth/resetpassword`,{email,password:newPassword},{withCredentials:true}) 
-navigate("/signin")
-  } catch (error) {
-    console.log(error)
+  const handleResetPassword = async () => {
+    if (newPassword == confirmPassword) {
+      try {
+        const result = await axios.post(`${serverUrl}/api/auth/resetpassword`, { email, password: newPassword }, { withCredentials: true })
+        navigate("/signin")
+      } catch (error) {
+        console.log(error)
+      }
+    } else {
+      alert("both password is not equal.")
+    }
+
   }
-  }else{
-    alert("both password is not equal.")
-  }
- 
- }
 
   return (
     <div
@@ -78,7 +78,7 @@ navigate("/signin")
               onChange={(e) => setEmail(e.target.value)}
             />
             <button
-              className="w-full font-semibold py-2 rounded-lg transition duration-200"
+              className="cursor-pointer  w-full font-semibold py-2 rounded-lg transition duration-200"
               style={{ backgroundColor: primaryColor, color: "white" }}
               onMouseOver={(e) =>
                 (e.currentTarget.style.backgroundColor = hoverColor)
@@ -108,7 +108,7 @@ navigate("/signin")
               onChange={(e) => setOtp(e.target.value)}
             />
             <button
-              className="w-full font-semibold py-2 rounded-lg transition duration-200"
+              className="cursor-pointer w-full font-semibold py-2 rounded-lg transition duration-200"
               style={{ backgroundColor: primaryColor, color: "white" }}
               onMouseOver={(e) =>
                 (e.currentTarget.style.backgroundColor = hoverColor)

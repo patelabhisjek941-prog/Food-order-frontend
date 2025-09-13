@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import { FcGoogle } from "react-icons/fc";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { Link } from "react-router-dom";
 import axios from "axios";
-import { serverUrl } from "../App";
 import { signInWithPopup } from "firebase/auth";
-import { auth, provider } from "../../utils/firebase";
+import { useState } from "react";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { FcGoogle } from "react-icons/fc";
 import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
+import { auth, provider } from "../../utils/firebase";
+import { serverUrl } from "../App";
 import { setUserData } from "../redux/userSlice";
 
 export default function SignUp() {
@@ -79,7 +79,7 @@ export default function SignUp() {
         style={{ border: `1px solid ${borderColor}` }}
       >
         <h1 className="text-3xl font-bold mb-2" style={{ color: primaryColor }}>
-          Vingo
+          Food Order & Delivery
         </h1>
         <p className="text-gray-600 mb-8">
           Create your account to get started with delicious food deliveries
@@ -92,7 +92,7 @@ export default function SignUp() {
           </label>
           <input
             type="text"
-            placeholder="Enter your full name"
+            placeholder="Abhishek Singh Narwariya"
             className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:border-orange-500"
             style={{ borderColor }}
             value={fullName}
@@ -161,7 +161,7 @@ export default function SignUp() {
                 key={r}
                 type="button"
                 onClick={() => setRole(r)}
-                className="flex-1 border rounded-lg px-3 py-2 text-center font-medium transition-colors"
+                className="cursor-pointer flex-1 border rounded-lg px-3 py-2 text-center font-medium transition-colors"
                 style={
                   role === r
                     ? { backgroundColor: primaryColor, color: "white" }
@@ -176,7 +176,7 @@ export default function SignUp() {
 
         {/* Sign Up Button */}
         <button
-          className="w-full font-semibold py-2 rounded-lg transition duration-200"
+          className=" cursor-pointer w-full font-semibold py-2 rounded-lg transition duration-200"
           style={{ backgroundColor: primaryColor, color: "white" }}
           onMouseOver={(e) =>
             (e.currentTarget.style.backgroundColor = hoverColor)
@@ -191,7 +191,7 @@ export default function SignUp() {
 
         {/* Google Auth */}
         <button
-          className="w-full mt-4 flex items-center justify-center gap-2 border rounded-lg px-4 py-2 transition duration-200"
+          className="cursor-pointer w-full mt-4 flex items-center justify-center gap-2 border rounded-lg px-4 py-2 transition duration-200"
           style={{ borderColor }}
           onClick={handleGoogleAuth}
         >

@@ -1,8 +1,8 @@
 import axios from "axios";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setOwnerPendingOrders, setPendingOrdersCount } from "../redux/userSlice";
 import { serverUrl } from "../App";
+import { setOwnerPendingOrders } from "../redux/userSlice";
 
 function useOwnerPendingOrders() {
   const dispatch = useDispatch();
@@ -16,7 +16,7 @@ function useOwnerPendingOrders() {
           withCredentials: true,
         });
         dispatch(setOwnerPendingOrders(result.data.orders));
-    
+
       };
       fetchOrders();
 
@@ -24,7 +24,7 @@ function useOwnerPendingOrders() {
       socket?.on("orders:new", (data) => {
         if (data.ownerId === userData._id) {
           dispatch(setOwnerPendingOrders(data.order));
-         
+
         }
       });
 
