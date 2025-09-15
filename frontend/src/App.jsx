@@ -26,7 +26,7 @@ import OrderPlaced from './pages/OrderPlaced'
 import PendingOrders from './pages/PendingOrders'
 import ShopItems from './pages/ShopItems'
 import TrackOrderPage from './pages/TrackOrderPage'
-export const serverUrl = import.meta.env.VITE_SERVER_URL
+export const serverUrl = "https://food-order-backend-1-zakd.onrender.com"
 
 // export const serverUrl = import.meta.process.env.VITE_SERVER_URL
 
