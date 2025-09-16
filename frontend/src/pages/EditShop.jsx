@@ -38,10 +38,16 @@ export default function EditShop() {
             dispatch(setShop(result.data))
             console.log(result.data)
         } catch (error) {
-            console.log(error)
+        if (error.response) {
+            console.log("Error Response:", error.response.data);
+        } else if (error.request) {
+            console.log("No Response Received:", error.request);
+        } else {
+            console.log("Error:", error.message);
         }
+    }
+};
 
-    };
 
     return (
         <div className="flex justify-center flex-col items-center p-6 bg-gradient-to-br from-orange-50 relative to-white min-h-screen">
