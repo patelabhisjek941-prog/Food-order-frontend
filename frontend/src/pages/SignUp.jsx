@@ -43,36 +43,6 @@ export default function SignUp() {
     }
   };
 
-//   const handleGoogleAuth = async () => {
-//   try {
-//     let mobileNumber = mobile;
-
-//     if (!mobileNumber) {
-//       mobileNumber = prompt("Please enter your mobile number:");
-     
-//       setMobile(mobileNumber);
-//     }
-
-//     const result = await signInWithPopup(auth, provider);
-
-//     if (result) {
-//       const { data } = await axios.post(
-//         `${serverUrl}/api/auth/googleauth`,
-//         {
-//           fullName: result.user.displayName,
-//           email: result.user.email,
-//           mobile: mobileNumber, // ✅ directly use local var
-//           role,
-//         },
-//         { withCredentials: true }
-//       );
-//       dispatch(setUserData(data));
-//     }
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
-
   const handleGoogleAuth = async () => {
   try {
     let mobileNumber = mobile;
@@ -84,7 +54,7 @@ export default function SignUp() {
     }
 
     try {
-      // 🔹 Try popup login first
+      //  Try popup login first
       const result = await signInWithPopup(auth, provider);
 
       if (result.user) {
@@ -113,7 +83,7 @@ export default function SignUp() {
   }
 };
 
-// 🔹 Handle redirect result after page reload
+//  Handle redirect result after page reload
 useEffect(() => {
   getRedirectResult(auth)
     .then(async (result) => {
