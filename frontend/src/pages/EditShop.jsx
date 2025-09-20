@@ -36,6 +36,7 @@ export default function EditShop() {
             formData.append("address", address);
             const result = await axios.post(`${serverUrl}/api/shop/editshop`, formData, { withCredentials: true })
             dispatch(setShop(result.data))
+            navigate("/dashboard")
             console.log(result.data)
         } catch (error) {
         if (error.response) {
