@@ -15,39 +15,78 @@ export default function EditShop() {
     const [frontendImage, setFrontendImage] = useState(shop?.image || "")
     const [backendImage, setBackendImage] = useState(null)
     const dispatch = useDispatch()
-
     const navigate = useNavigate()
+    
+ // Handle image change
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         setBackendImage(file)
         setFrontendImage(URL.createObjectURL(file))
     };
+    
+// Submit form
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const formData = new FormData()
-            formData.append("name", name)
-            formData.append("city", city)
-            formData.append("state", state)
-            if (backendImage) {
-                formData.append("image", backendImage)
-            }
-            formData.append("address", address);
-            const result = await axios.post(`${serverUrl}/api/shop/editshop`, formData, { withCredentials: true },headers: { "Content-Type": "multipart/form-data" })
-            dispatch(setShop(result.data))
-            navigate("/dashboard")
-            console.log(result.data)
-        } catch (error) {
-        if (error.response) {
-            console.log("Error Response:", error.response.data);
-        } else if (error.request) {
-            console.log("No Response Received:", error.request);
-        } else {
-            console.log("Error:", error.message);
+   const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("city", city);
+      formData.append("state", state);
+      formData.append("address", address);
+      if (backendImage) {
+        formData.append("image", backendImage);
+      }
+
+      const result = await axios.post(
+        `${serverUrl}/api/shop/editshop`,
+        formData,
+        {
+          withCredentials: true,
+          headers: { "Content-Type": "multipart/form-data" },
         }
+      );
+
+      dispatch(setShop(result.data));
+      navigate("/dashboard");
+      console.log("Shop updated:", result.data);
+    } catch (error) {
+      if (error.response) {
+        console.log("Error Response:", error.response.data);
+      } else if (error.request) {
+        console.log("No Response Received:", error.request);
+      } else {
+        console.log("Error:", error.message);
+      }
     }
-};
+  };
+
+    
+//     const handleSubmit = async (e) => {
+//         e.preventDefault();
+//         try {
+//             const formData = new FormData()
+//             formData.append("name", name)
+//             formData.append("city", city)
+//             formData.append("state", state)
+//             if (backendImage) {
+//                 formData.append("image", backendImage)
+//             }
+//             formData.append("address", address);
+//             const result = await axios.post(`${serverUrl}/api/shop/editshop`, formData, { withCredentials: true },headers: { "Content-Type": "multipart/form-data" })
+//             dispatch(setShop(result.data))
+//             navigate("/dashboard")
+//             console.log(result.data)
+//         } catch (error) {
+//         if (error.response) {
+//             console.log("Error Response:", error.response.data);
+//         } else if (error.request) {
+//             console.log("No Response Received:", error.request);
+//         } else {
+//             console.log("Error:", error.message);
+//         }
+//     }
+// };
 
 
     return (
