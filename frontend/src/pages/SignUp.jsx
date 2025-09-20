@@ -11,7 +11,7 @@ import { setUserData } from "../redux/userSlice";
 
 
 
-import { signInWithPopup, signInWithRedirect, getRedirectResult } from "firebase/auth";
+// import { signInWithPopup, signInWithRedirect, getRedirectResult } from "firebase/auth";
 
 
 
