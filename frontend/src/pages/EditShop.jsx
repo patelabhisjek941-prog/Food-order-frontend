@@ -25,33 +25,81 @@ export default function EditShop() {
     };
     
 // Submit form
-      
+
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const formData = new FormData()
-            formData.append("name", name)
-            formData.append("city", city)
-            formData.append("state", state)
-            if (backendImage) {
-                formData.append("image", backendImage)
-            }
-            formData.append("address", address);
-            const result = await axios.post(`${serverUrl}/api/shop/editshop`,formData,{headers: { "Content-Type": "multipart/form-data" },withCredentials: true});
-            //const result = await axios.post(`${serverUrl}/api/shop/editshop`, formData, { withCredentials: true },headers: { "Content-Type": "multipart/form-data" })
-            dispatch(setShop(result.data))
-            navigate("/dashboard")
-            console.log(result.data)
-        } catch (error) {
-        if (error.response) {
-            console.log("Error Response:", error.response.data);
-        } else if (error.request) {
-            console.log("No Response Received:", error.request);
-        } else {
-            console.log("Error:", error.message);
-        }
+  e.preventDefault();
+  try {
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("city", city);
+    formData.append("state", state);
+    if (backendImage) {
+      formData.append("image", backendImage);
     }
+    formData.append("address", address);
+
+    // ✅ Get token from localStorage (or Redux, depending on your app)
+    const token = localStorage.getItem("token");
+
+    // ✅ Call correct backend endpoint
+    const result = await axios.post(
+      `${serverUrl}/api/shop/add`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`, // ✅ Send JWT
+        },
+      }
+    );
+
+    dispatch(setShop(result.data));
+    navigate("/dashboard");
+    console.log("Shop saved:", result.data);
+  } catch (error) {
+    if (error.response) {
+      console.log("Error Response:", error.response.data);
+    } else if (error.request) {
+      console.log("No Response Received:", error.request);
+    } else {
+      console.log("Error:", error.message);
+    }
+  }
 };
+
+
+
+
+
+
+    
+      
+//     const handleSubmit = async (e) => {
+//         e.preventDefault();
+//         try {
+//             const formData = new FormData()
+//             formData.append("name", name)
+//             formData.append("city", city)
+//             formData.append("state", state)
+//             if (backendImage) {
+//                 formData.append("image", backendImage)
+//             }
+//             formData.append("address", address);
+//             const result = await axios.post(`${serverUrl}/api/shop/editshop`,formData,{headers: { "Content-Type": "multipart/form-data" },withCredentials: true});
+//             //const result = await axios.post(`${serverUrl}/api/shop/editshop`, formData, { withCredentials: true },headers: { "Content-Type": "multipart/form-data" })
+//             dispatch(setShop(result.data))
+//             navigate("/dashboard")
+//             console.log(result.data)
+//         } catch (error) {
+//         if (error.response) {
+//             console.log("Error Response:", error.response.data);
+//         } else if (error.request) {
+//             console.log("No Response Received:", error.request);
+//         } else {
+//             console.log("Error:", error.message);
+//         }
+//     }
+// };
 
 
     return (
