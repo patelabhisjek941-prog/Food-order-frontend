@@ -1,4 +1,5 @@
-import { useEffect } from 'react'
+// import { useEffect } from 'react'
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import getCity from './hooks/getCity'
