@@ -42,6 +42,10 @@ export default function EditShop() {
 
     // ✅ get token
     const token = localStorage.getItem("token");
+      if (!token) {
+  alert("You are not logged in!");
+  return;
+}
 
     const result = await axios.post(
       `${serverUrl}/api/shop/editshop`,
