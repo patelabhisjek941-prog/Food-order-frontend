@@ -26,44 +26,94 @@ export default function EditShop() {
     
 // Submit form
 
+
+
+    const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("city", city);
+    formData.append("state", state);
+    if (backendImage) {
+      formData.append("image", backendImage);
+    }
+    formData.append("address", address);
+
+    // ✅ get token
+    const token = localStorage.getItem("token");
+
+    const result = await axios.post(
+      `${serverUrl}/api/shop/editshop`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    dispatch(setShop(result.data));
+    navigate("/dashboard");
+    console.log(result.data);
+  } catch (error) {
+    if (error.response) {
+      console.log("Error Response:", error.response.data);
+    } else if (error.request) {
+      console.log("No Response Received:", error.request);
+    } else {
+      console.log("Error:", error.message);
+    }
+  }
+};
+
+
+
+
+
+
+
+    
+
    
       
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const formData = new FormData()
-            formData.append("name", name)
-            formData.append("city", city)
-            formData.append("state", state)
-            if (backendImage) {
-                formData.append("image", backendImage)
-            }
-            formData.append("address", address);
-            const result = await axios.post(
-  `${serverUrl}/api/shop/editshop`,
-  formData,
-  {
-    headers: {
-      "Content-Type": "multipart/form-data",
-      Authorization: `Bearer ${token}`,   // 👈 important
-    },
-    withCredentials: true, // only needed if you're using cookies
-  }
-);
-            //const result = await axios.post(`${serverUrl}/api/shop/editshop`, formData, { withCredentials: true },headers: { "Content-Type": "multipart/form-data" })
-            dispatch(setShop(result.data))
-            navigate("/dashboard")
-            console.log(result.data)
-        } catch (error) {
-        if (error.response) {
-            console.log("Error Response:", error.response.data);
-        } else if (error.request) {
-            console.log("No Response Received:", error.request);
-        } else {
-            console.log("Error:", error.message);
-        }
-    }
-};
+//     const handleSubmit = async (e) => {
+//         e.preventDefault();
+//         try {
+//             const formData = new FormData()
+//             formData.append("name", name)
+//             formData.append("city", city)
+//             formData.append("state", state)
+//             if (backendImage) {
+//                 formData.append("image", backendImage)
+//             }
+//             formData.append("address", address);
+//             const result = await axios.post(
+//   `${serverUrl}/api/shop/editshop`,
+//   formData,
+//   {
+//     headers: {
+//       "Content-Type": "multipart/form-data",
+//       Authorization: `Bearer ${token}`,   // 👈 important
+//     },
+//     withCredentials: true, // only needed if you're using cookies
+//   }
+// );
+//             //const result = await axios.post(`${serverUrl}/api/shop/editshop`, formData, { withCredentials: true },headers: { "Content-Type": "multipart/form-data" })
+//             dispatch(setShop(result.data))
+//             navigate("/dashboard")
+//             console.log(result.data)
+//         } catch (error) {
+//         if (error.response) {
+//             console.log("Error Response:", error.response.data);
+//         } else if (error.request) {
+//             console.log("No Response Received:", error.request);
+//         } else {
+//             console.log("Error:", error.message);
+//         }
+//     }
+// };
 
 
     return (
