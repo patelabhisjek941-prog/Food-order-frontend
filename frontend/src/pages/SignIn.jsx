@@ -20,34 +20,83 @@ export default function SignIn() {
   const bgColor = "#fff9f6"; // light off-white background
   const borderColor = "#ddd";
   const dispatch = useDispatch()
-  const handleSignIn = async () => {
+
+
+   const handleSignIn = async () => {
     try {
       const result = await axios.post(
         `${serverUrl}/api/auth/signin`,
-        { email, password },
-        { withCredentials: true }
+        { email, password }
       );
-      dispatch(setUserData(result.data))
+
+      // ✅ Save token in localStorage
+      if (result.data.token) {
+        localStorage.setItem("token", result.data.token);
+      }
+
+      // ✅ Save user in Redux
+      dispatch(setUserData(result.data.user));
+
+      navigate("/"); // redirect
     } catch (error) {
-      console.log(error);
+      console.error(error.response?.data || error.message);
+      setError(error.response?.data?.message || "Login failed");
     }
   };
 
   const handleGoogleAuth = async () => {
     try {
       const result = await signInWithPopup(auth, provider);
-      console.log(result);
-      if (result) {
-        const { data } = await axios.post(`${serverUrl}/api/auth/googleauth`, {
-          email: result.user.email,
-        }, { withCredentials: true })
-        dispatch(setUserData(data))
-      }
 
+      if (result) {
+        const { data } = await axios.post(
+          `${serverUrl}/api/auth/googleauth`,
+          { email: result.user.email }
+        );
+
+        // ✅ Save token
+        if (data.token) {
+          localStorage.setItem("token", data.token);
+        }
+
+        dispatch(setUserData(data.user));
+        navigate("/");
+      }
     } catch (error) {
-      console.log(error);
+      console.error(error.response?.data || error.message);
+      setError("Google sign-in failed");
     }
   };
+
+  
+  // const handleSignIn = async () => {
+  //   try {
+  //     const result = await axios.post(
+  //       `${serverUrl}/api/auth/signin`,
+  //       { email, password },
+  //       { withCredentials: true }
+  //     );
+  //     dispatch(setUserData(result.data))
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
+  // const handleGoogleAuth = async () => {
+  //   try {
+  //     const result = await signInWithPopup(auth, provider);
+  //     console.log(result);
+  //     if (result) {
+  //       const { data } = await axios.post(`${serverUrl}/api/auth/googleauth`, {
+  //         email: result.user.email,
+  //       }, { withCredentials: true })
+  //       dispatch(setUserData(data))
+  //     }
+
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   return (
     <div
