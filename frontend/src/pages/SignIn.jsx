@@ -74,8 +74,15 @@ export default function SignIn() {
       const result = await axios.post(
         `${serverUrl}/api/auth/signin`,
         { email, password },
-        { withCredentials: true }
+        { withCredentials: true }      
+    
+
       );
+      // Save token
+    if (result.data.token) {
+      localStorage.setItem("token", result.data.token);
+    }
+
       dispatch(setUserData(result.data))
     } catch (error) {
       console.log(error);
