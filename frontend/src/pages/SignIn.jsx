@@ -97,6 +97,10 @@ export default function SignIn() {
         const { data } = await axios.post(`${serverUrl}/api/auth/googleauth`, {
           email: result.user.email,
         }, { withCredentials: true })
+         // Save token
+    if (result.data.token) {
+      localStorage.setItem("token", result.data.token);
+    }
         dispatch(setUserData(data))
       }
 
