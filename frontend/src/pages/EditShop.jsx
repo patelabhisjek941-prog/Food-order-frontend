@@ -6,107 +6,43 @@ import { serverUrl } from "../App";
 import { setShop } from "../redux/userSlice";
 import { useNavigate } from "react-router-dom";
 import { MdKeyboardBackspace } from "react-icons/md";
-// export default function EditShop() {
-//     const { userData, shop } = useSelector(state => state.user)
-//     const [name, setName] = useState(shop?.name || "")
-//     const [city, setCity] = useState(shop?.city || "")
-//     const [state,setState] = useState(shop?.state || "")
-//     const [address, setAddress] = useState(shop?.address || "")
-//     const [frontendImage, setFrontendImage] = useState(shop?.image|| "")
-//  const [backendImage, setBackendImage] = useState(null)
-// const dispatch=useDispatch()
-
-// const navigate=useNavigate()
-//     const handleImageChange = (e) => {
-//         const file = e.target.files[0];
-//        setBackendImage(file)
-//        setFrontendImage(URL.createObjectURL(file))
-//     };
-
 export default function EditShop() {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+    const { userData, shop } = useSelector(state => state.user)
+    const [name, setName] = useState(shop?.name || "")
+    const [city, setCity] = useState(shop?.city || "")
+    const [state,setState] = useState(shop?.state || "")
+    const [address, setAddress] = useState(shop?.address || "")
+    const [frontendImage, setFrontendImage] = useState(shop?.image|| "")
+ const [backendImage, setBackendImage] = useState(null)
+const dispatch=useDispatch()
 
-  const { userData, shop } = useSelector((state) => state.user);
+const navigate=useNavigate()
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+       setBackendImage(file)
+       setFrontendImage(URL.createObjectURL(file))
+    };
 
-  const [name, setName] = useState(shop?.name || "");
-  const [city, setCity] = useState(shop?.city || "");
-  const [stateName, setStateName] = useState(shop?.state || "");
-  const [address, setAddress] = useState(shop?.address || "");
-  const [frontendImage, setFrontendImage] = useState(shop?.image || "");
-  const [backendImage, setBackendImage] = useState(null);
-
-  // Redirect if user is not logged in
-  useEffect(() => {
-    const token = userData?.token || localStorage.getItem("token");
-    if (!token) navigate("/login");
-  }, [userData, navigate]);
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setBackendImage(file);
-      setFrontendImage(URL.createObjectURL(file));
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      const token = userData?.token || localStorage.getItem("token");
-      if (!token) {
-        alert("You are not logged in. Please login first.");
-        navigate("/login");
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append("name", name);
-      formData.append("city", city);
-      formData.append("state", stateName);
-      formData.append("address", address);
-      if (backendImage) formData.append("image", backendImage);
-
-      const res = await axios.post(`${serverUrl}/api/shop/editshop`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`, // crucial for isAuth middleware
-        },
-        withCredentials: true, // keep if backend uses cookie auth
-      });
-
-      dispatch(setShop(res.data));
-      alert("Shop updated successfully!");
-      navigate("/"); // redirect to homepage or dashboard
-    } catch (error) {
-      console.error("AXIOS ERROR:", error.message);
-      console.error("response data:", error.response?.data);
-      console.error("response status:", error.response?.status);
-      alert(error.response?.data?.message || "Something went wrong.");
-    }
-  };
-
-
-  
- //    const handleSubmit =async (e) => {
- //        e.preventDefault();
- //        try {
- //            const formData=new FormData()
- //            formData.append("name",name)
- //            formData.append("city",city)
- //            formData.append("state",state)
- //            if(backendImage){
- // formData.append("image",backendImage)
- //            }
- //            formData.append("address",address);
- //            const result=await axios.post(`${serverUrl}/api/shop/editshop`,formData,{withCredentials:true})
- //            dispatch(setShop(result.data))
- //            console.log(result.data)
- //        } catch (error) {
- //            console.log(error)
- //        }
+ 
+    const handleSubmit =async (e) => {
+        e.preventDefault();
+        try {
+            const formData=new FormData()
+            formData.append("name",name)
+            formData.append("city",city)
+            formData.append("state",state)
+            if(backendImage){
+ formData.append("image",backendImage)
+            }
+            formData.append("address",address);
+            const result=await axios.post(`${serverUrl}/api/shop/editshop`,formData,{withCredentials:true})
+            dispatch(setShop(result.data))
+            console.log(result.data)
+        } catch (error) {
+            console.log(error)
+        }
         
- //    };
+    };
 
     return (
         <div className="flex justify-center flex-col items-center p-6 bg-gradient-to-br from-orange-50 relative to-white min-h-screen">
