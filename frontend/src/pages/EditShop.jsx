@@ -46,7 +46,7 @@ export default function EditShop() {
   alert("You are not logged in!");
   return;
 }
-
+// send request with Authorization header + credentials
     const result = await axios.post(
       `${serverUrl}/api/shop/editshop`,
       formData,
@@ -55,6 +55,7 @@ export default function EditShop() {
           // "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
         },
+          withCredentials: true,
       }
     );
 
