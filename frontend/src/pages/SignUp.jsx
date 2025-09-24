@@ -32,6 +32,7 @@ export default function SignUp() {
         { withCredentials: true }
       );
       dispatch(setUserData(result.data));
+      localStorage.setItem("userData", JSON.stringify(result.data));
     } catch (error) {
       console.log(error);
     }
@@ -61,6 +62,7 @@ export default function SignUp() {
         { withCredentials: true }
       );
       dispatch(setUserData(data));
+      localStorage.setItem("userData", JSON.stringify(result.data));
     }
   } catch (error) {
     console.log(error);
