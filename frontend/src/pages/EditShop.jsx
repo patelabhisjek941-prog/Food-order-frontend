@@ -24,41 +24,39 @@ const navigate=useNavigate()
     };
 
 
-    // In EditShop component
-const handleSubmit = async (e) => {
+   const handleSubmit = async (e) => {
   e.preventDefault();
   try {
     const formData = new FormData();
     formData.append("name", name);
     formData.append("city", city);
     formData.append("state", state);
-    if (backendImage) formData.append("image", backendImage);
     formData.append("address", address);
+    if (backendImage) formData.append("image", backendImage);
 
-    // get token from redux or fallback to localStorage
     const token = userData?.token || localStorage.getItem("token");
+    if (!token) throw new Error("No token found. Please login again.");
 
     const result = await axios.post(
       `${serverUrl}/api/shop/editshop`,
       formData,
       {
         headers: {
-          // DO NOT set Content-Type manually for FormData — browser will set boundary
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          Authorization: `Bearer ${token}`, // <- this is crucial
         },
-        withCredentials: true, // keep if you rely on cookie auth
+        withCredentials: true, // optional if you also use cookie-based auth
       }
     );
 
     dispatch(setShop(result.data));
     console.log("shop saved:", result.data);
   } catch (error) {
-    // better logging so you see the exact server response
     console.log("AXIOS ERROR:", error.message);
     console.log("response data:", error.response?.data);
     console.log("response status:", error.response?.status);
   }
 };
+
 
 
  //    const handleSubmit =async (e) => {
