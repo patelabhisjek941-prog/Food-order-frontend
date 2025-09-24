@@ -1,4 +1,5 @@
 // import { useEffect } from 'react'
+import axios from "axios";
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Navigate, Route, Routes } from 'react-router-dom'
@@ -30,6 +31,15 @@ import TrackOrderPage from './pages/TrackOrderPage'
 export const serverUrl = "https://food-order-backend-1-zakd.onrender.com"
 
 // export const serverUrl = import.meta.process.env.VITE_SERVER_URL
+
+axios.defaults.withCredentials = true; // allow cookies
+axios.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
 function App() {
   const { userData, allShops, socket } = useSelector(state => state.user)
