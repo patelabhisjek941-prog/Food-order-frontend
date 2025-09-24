@@ -85,7 +85,8 @@ export default function SignIn() {
 
       dispatch(setUserData(result.data))
     } catch (error) {
-      console.log(error);
+      console.error(error.response?.data || error.message);
+    setError(error.response?.data?.message || "Login failed");
     }
   };
 
@@ -105,7 +106,8 @@ export default function SignIn() {
       }
 
     } catch (error) {
-      console.log(error);
+      console.error(error.response?.data || error.message);
+    setError(error.response?.data?.message || "Login failed");
     }
   };
 
