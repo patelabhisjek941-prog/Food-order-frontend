@@ -28,6 +28,7 @@ const dispatch=useDispatch()
         { withCredentials: true }
       );
      dispatch(setUserData(result.data))
+     localStorage.setItem("userData", JSON.stringify(result.data));
     } catch (error) {
       console.log(error);
     }
@@ -42,6 +43,7 @@ const dispatch=useDispatch()
           email:result.user.email,
         },{withCredentials:true})
          dispatch(setUserData(data))
+         localStorage.setItem("userData", JSON.stringify(result.data));
       }
 
     } catch (error) {
