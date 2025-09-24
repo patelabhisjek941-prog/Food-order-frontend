@@ -1,19 +1,13 @@
-import axios from "axios";
-import { signInWithPopup } from "firebase/auth";
-import React,  { useState, useEffect } from "react";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import React, { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
-import { useDispatch } from "react-redux";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { auth, provider } from "../../utils/firebase";
+import axios from "axios";
 import { serverUrl } from "../App";
+import { signInWithPopup } from "firebase/auth";
+import { auth, provider } from "../../utils/firebase";
+import { useDispatch } from "react-redux";
 import { setUserData } from "../redux/userSlice";
-
-
-
-import {signInWithRedirect, getRedirectResult } from "firebase/auth";
-
-
 
 export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
@@ -30,180 +24,49 @@ export default function SignUp() {
 
   const dispatch = useDispatch();
 
-//   const handleSignUp = async () => {
-//     try {
-//       const result = await axios.post(
-//         `${serverUrl}/api/auth/signup`,
-//         { fullName, email, mobile, password, role },
-//         { withCredentials: true }
-//       );
-//       dispatch(setUserData(result.data));
-//     } catch (error) {
-//       console.log(error);
-//     }
-//   };
-
-//   const handleGoogleAuth = async () => {
-//   try {
-//     let mobileNumber = mobile;
-
-//     if (!mobileNumber) {
-//       mobileNumber = prompt("Please enter your mobile number:");
-//       if (!mobileNumber) return; // stop if user cancels
-//       setMobile(mobileNumber);
-//     }
-
-//     try {
-//       //  Try popup login first
-//       const result = await signInWithPopup(auth, provider);
-
-//       if (result.user) {
-//         const { data } = await axios.post(
-//           `${serverUrl}/api/auth/googleauth`,
-//           {
-//             fullName: result.user.displayName,
-//             email: result.user.email,
-//             mobile: mobileNumber,
-//             role,
-//           },
-//           { withCredentials: true }
-//         );
-//         dispatch(setUserData(data));
-//       }
-//     } catch (popupError) {
-//       if (popupError.code === "auth/popup-blocked") {
-//         console.warn("Popup blocked, using redirect...");
-//         await signInWithRedirect(auth, provider);
-//       } else {
-//         console.error("Popup error:", popupError);
-//       }
-//     }
-//   } catch (error) {
-//     console.error("Google Auth Error:", error);
-//   }
-// };
-
-// //  Handle redirect result after page reload
-// useEffect(() => {
-//   getRedirectResult(auth)
-//     .then(async (result) => {
-//       if (result?.user) {
-//         let mobileNumber = mobile || prompt("Please enter your mobile number:");
-//         if (!mobileNumber) return;
-
-//         const { data } = await axios.post(
-//           `${serverUrl}/api/auth/googleauth`,
-//           {
-//             fullName: result.user.displayName,
-//             email: result.user.email,
-//             mobile: mobileNumber,
-//             role,
-//           },
-//           { withCredentials: true }
-//         );
-//         dispatch(setUserData(data));
-//       }
-//     })
-//     .catch((error) => {
-//       console.error("Redirect error:", error);
-//     });
-// }, []);
-
-    // ✅ Handle normal signup
   const handleSignUp = async () => {
     try {
-      const result = await axios.post(`${serverUrl}/api/auth/signup`, {
-        fullName,
-        email,
-        mobile,
-        password,
-        role,
-      });
-
-      // ✅ Save token
-      if (result.data.token) {
-        localStorage.setItem("token", result.data.token);
-      }
-
-      // ✅ Save user in redux
-      dispatch(setUserData(result.data.user));
-      navigate("/");
+      const result = await axios.post(
+        `${serverUrl}/api/auth/signup`,
+        { fullName, email, mobile, password, role },
+        { withCredentials: true }
+      );
+      dispatch(setUserData(result.data));
     } catch (error) {
-      console.error(error.response?.data || error.message);
-      setError(error.response?.data?.message || "Signup failed");
+      console.log(error);
     }
   };
 
-  // ✅ Google auth signup
   const handleGoogleAuth = async () => {
-    try {
-      let mobileNumber = mobile;
+  try {
+    let mobileNumber = mobile;
 
-      if (!mobileNumber) {
-        mobileNumber = prompt("Please enter your mobile number:");
-        if (!mobileNumber) return;
-        setMobile(mobileNumber);
-      }
-
-      try {
-        const result = await signInWithPopup(auth, provider);
-
-        if (result.user) {
-          const { data } = await axios.post(`${serverUrl}/api/auth/googleauth`, {
-            fullName: result.user.displayName,
-            email: result.user.email,
-            mobile: mobileNumber,
-            role,
-          });
-
-          if (data.token) {
-            localStorage.setItem("token", data.token);
-          }
-
-          dispatch(setUserData(data.user));
-          navigate("/");
-        }
-      } catch (popupError) {
-        if (popupError.code === "auth/popup-blocked") {
-          console.warn("Popup blocked, using redirect...");
-          await signInWithRedirect(auth, provider);
-        } else {
-          console.error("Popup error:", popupError);
-        }
-      }
-    } catch (error) {
-      console.error("Google Auth Error:", error);
-      setError("Google signup failed");
+    if (!mobileNumber) {
+      mobileNumber = prompt("Please enter your mobile number:");
+     
+      setMobile(mobileNumber);
     }
-  };
 
-  // ✅ Handle Google redirect result
-  useEffect(() => {
-    getRedirectResult(auth)
-      .then(async (result) => {
-        if (result?.user) {
-          let mobileNumber = mobile || prompt("Please enter your mobile number:");
-          if (!mobileNumber) return;
+    const result = await signInWithPopup(auth, provider);
 
-          const { data } = await axios.post(`${serverUrl}/api/auth/googleauth`, {
-            fullName: result.user.displayName,
-            email: result.user.email,
-            mobile: mobileNumber,
-            role,
-          });
+    if (result) {
+      const { data } = await axios.post(
+        `${serverUrl}/api/auth/googleauth`,
+        {
+          fullName: result.user.displayName,
+          email: result.user.email,
+          mobile: mobileNumber, // ✅ directly use local var
+          role,
+        },
+        { withCredentials: true }
+      );
+      dispatch(setUserData(data));
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
 
-          if (data.token) {
-            localStorage.setItem("token", data.token);
-          }
-
-          dispatch(setUserData(data.user));
-          navigate("/");
-        }
-      })
-      .catch((error) => {
-        console.error("Redirect error:", error);
-      });
-  }, []);
 
 
   return (
@@ -216,7 +79,7 @@ export default function SignUp() {
         style={{ border: `1px solid ${borderColor}` }}
       >
         <h1 className="text-3xl font-bold mb-2" style={{ color: primaryColor }}>
-          Food Order & Delivery
+          Vingo
         </h1>
         <p className="text-gray-600 mb-8">
           Create your account to get started with delicious food deliveries
@@ -229,7 +92,7 @@ export default function SignUp() {
           </label>
           <input
             type="text"
-            placeholder="Abhishek Singh Narwariya"
+            placeholder="Enter your full name"
             className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:border-orange-500"
             style={{ borderColor }}
             value={fullName}
@@ -298,7 +161,7 @@ export default function SignUp() {
                 key={r}
                 type="button"
                 onClick={() => setRole(r)}
-                className="cursor-pointer flex-1 border rounded-lg px-3 py-2 text-center font-medium transition-colors"
+                className="flex-1 border rounded-lg px-3 py-2 text-center font-medium transition-colors"
                 style={
                   role === r
                     ? { backgroundColor: primaryColor, color: "white" }
@@ -313,7 +176,7 @@ export default function SignUp() {
 
         {/* Sign Up Button */}
         <button
-          className=" cursor-pointer w-full font-semibold py-2 rounded-lg transition duration-200"
+          className="w-full font-semibold py-2 rounded-lg transition duration-200"
           style={{ backgroundColor: primaryColor, color: "white" }}
           onMouseOver={(e) =>
             (e.currentTarget.style.backgroundColor = hoverColor)
@@ -328,7 +191,7 @@ export default function SignUp() {
 
         {/* Google Auth */}
         <button
-          className="cursor-pointer w-full mt-4 flex items-center justify-center gap-2 border rounded-lg px-4 py-2 transition duration-200"
+          className="w-full mt-4 flex items-center justify-center gap-2 border rounded-lg px-4 py-2 transition duration-200"
           style={{ borderColor }}
           onClick={handleGoogleAuth}
         >
