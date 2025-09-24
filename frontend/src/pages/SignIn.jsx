@@ -191,6 +191,17 @@ export default function SignIn() {
           </span>
         </button>
 
+
+         {loading ? (
+            <Spinner />
+          ) : (
+            <>
+              <FcGoogle size={20} />
+              <span className="font-medium text-gray-700">Sign in with Google</span>
+            </>
+          )}
+        </button>
+
         {/* No account yet */}
         <p className="mt-6 text-center text-gray-600">
           Don’t have an account?{" "}
