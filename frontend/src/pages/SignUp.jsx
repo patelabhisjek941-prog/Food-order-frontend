@@ -30,85 +30,180 @@ export default function SignUp() {
 
   const dispatch = useDispatch();
 
+//   const handleSignUp = async () => {
+//     try {
+//       const result = await axios.post(
+//         `${serverUrl}/api/auth/signup`,
+//         { fullName, email, mobile, password, role },
+//         { withCredentials: true }
+//       );
+//       dispatch(setUserData(result.data));
+//     } catch (error) {
+//       console.log(error);
+//     }
+//   };
+
+//   const handleGoogleAuth = async () => {
+//   try {
+//     let mobileNumber = mobile;
+
+//     if (!mobileNumber) {
+//       mobileNumber = prompt("Please enter your mobile number:");
+//       if (!mobileNumber) return; // stop if user cancels
+//       setMobile(mobileNumber);
+//     }
+
+//     try {
+//       //  Try popup login first
+//       const result = await signInWithPopup(auth, provider);
+
+//       if (result.user) {
+//         const { data } = await axios.post(
+//           `${serverUrl}/api/auth/googleauth`,
+//           {
+//             fullName: result.user.displayName,
+//             email: result.user.email,
+//             mobile: mobileNumber,
+//             role,
+//           },
+//           { withCredentials: true }
+//         );
+//         dispatch(setUserData(data));
+//       }
+//     } catch (popupError) {
+//       if (popupError.code === "auth/popup-blocked") {
+//         console.warn("Popup blocked, using redirect...");
+//         await signInWithRedirect(auth, provider);
+//       } else {
+//         console.error("Popup error:", popupError);
+//       }
+//     }
+//   } catch (error) {
+//     console.error("Google Auth Error:", error);
+//   }
+// };
+
+// //  Handle redirect result after page reload
+// useEffect(() => {
+//   getRedirectResult(auth)
+//     .then(async (result) => {
+//       if (result?.user) {
+//         let mobileNumber = mobile || prompt("Please enter your mobile number:");
+//         if (!mobileNumber) return;
+
+//         const { data } = await axios.post(
+//           `${serverUrl}/api/auth/googleauth`,
+//           {
+//             fullName: result.user.displayName,
+//             email: result.user.email,
+//             mobile: mobileNumber,
+//             role,
+//           },
+//           { withCredentials: true }
+//         );
+//         dispatch(setUserData(data));
+//       }
+//     })
+//     .catch((error) => {
+//       console.error("Redirect error:", error);
+//     });
+// }, []);
+
+    // ✅ Handle normal signup
   const handleSignUp = async () => {
     try {
-      const result = await axios.post(
-        `${serverUrl}/api/auth/signup`,
-        { fullName, email, mobile, password, role },
-        { withCredentials: true }
-      );
-      dispatch(setUserData(result.data));
+      const result = await axios.post(`${serverUrl}/api/auth/signup`, {
+        fullName,
+        email,
+        mobile,
+        password,
+        role,
+      });
+
+      // ✅ Save token
+      if (result.data.token) {
+        localStorage.setItem("token", result.data.token);
+      }
+
+      // ✅ Save user in redux
+      dispatch(setUserData(result.data.user));
+      navigate("/");
     } catch (error) {
-      console.log(error);
+      console.error(error.response?.data || error.message);
+      setError(error.response?.data?.message || "Signup failed");
     }
   };
 
+  // ✅ Google auth signup
   const handleGoogleAuth = async () => {
-  try {
-    let mobileNumber = mobile;
-
-    if (!mobileNumber) {
-      mobileNumber = prompt("Please enter your mobile number:");
-      if (!mobileNumber) return; // stop if user cancels
-      setMobile(mobileNumber);
-    }
-
     try {
-      //  Try popup login first
-      const result = await signInWithPopup(auth, provider);
+      let mobileNumber = mobile;
 
-      if (result.user) {
-        const { data } = await axios.post(
-          `${serverUrl}/api/auth/googleauth`,
-          {
-            fullName: result.user.displayName,
-            email: result.user.email,
-            mobile: mobileNumber,
-            role,
-          },
-          { withCredentials: true }
-        );
-        dispatch(setUserData(data));
-      }
-    } catch (popupError) {
-      if (popupError.code === "auth/popup-blocked") {
-        console.warn("Popup blocked, using redirect...");
-        await signInWithRedirect(auth, provider);
-      } else {
-        console.error("Popup error:", popupError);
-      }
-    }
-  } catch (error) {
-    console.error("Google Auth Error:", error);
-  }
-};
-
-//  Handle redirect result after page reload
-useEffect(() => {
-  getRedirectResult(auth)
-    .then(async (result) => {
-      if (result?.user) {
-        let mobileNumber = mobile || prompt("Please enter your mobile number:");
+      if (!mobileNumber) {
+        mobileNumber = prompt("Please enter your mobile number:");
         if (!mobileNumber) return;
+        setMobile(mobileNumber);
+      }
 
-        const { data } = await axios.post(
-          `${serverUrl}/api/auth/googleauth`,
-          {
+      try {
+        const result = await signInWithPopup(auth, provider);
+
+        if (result.user) {
+          const { data } = await axios.post(`${serverUrl}/api/auth/googleauth`, {
             fullName: result.user.displayName,
             email: result.user.email,
             mobile: mobileNumber,
             role,
-          },
-          { withCredentials: true }
-        );
-        dispatch(setUserData(data));
-      }
-    })
-    .catch((error) => {
-      console.error("Redirect error:", error);
-    });
-}, []);
+          });
 
+          if (data.token) {
+            localStorage.setItem("token", data.token);
+          }
+
+          dispatch(setUserData(data.user));
+          navigate("/");
+        }
+      } catch (popupError) {
+        if (popupError.code === "auth/popup-blocked") {
+          console.warn("Popup blocked, using redirect...");
+          await signInWithRedirect(auth, provider);
+        } else {
+          console.error("Popup error:", popupError);
+        }
+      }
+    } catch (error) {
+      console.error("Google Auth Error:", error);
+      setError("Google signup failed");
+    }
+  };
+
+  // ✅ Handle Google redirect result
+  useEffect(() => {
+    getRedirectResult(auth)
+      .then(async (result) => {
+        if (result?.user) {
+          let mobileNumber = mobile || prompt("Please enter your mobile number:");
+          if (!mobileNumber) return;
+
+          const { data } = await axios.post(`${serverUrl}/api/auth/googleauth`, {
+            fullName: result.user.displayName,
+            email: result.user.email,
+            mobile: mobileNumber,
+            role,
+          });
+
+          if (data.token) {
+            localStorage.setItem("token", data.token);
+          }
+
+          dispatch(setUserData(data.user));
+          navigate("/");
+        }
+      })
+      .catch((error) => {
+        console.error("Redirect error:", error);
+      });
+  }, []);
 
 
   return (
