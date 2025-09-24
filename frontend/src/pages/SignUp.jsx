@@ -79,7 +79,7 @@ export default function SignUp() {
         style={{ border: `1px solid ${borderColor}` }}
       >
         <h1 className="text-3xl font-bold mb-2" style={{ color: primaryColor }}>
-          Food order & Delivery
+          Food order & Delivery Web
         </h1>
         <p className="text-gray-600 mb-8">
           Create your account to get started with delicious food deliveries
