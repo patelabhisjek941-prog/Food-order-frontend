@@ -23,25 +23,63 @@ const navigate=useNavigate()
        setFrontendImage(URL.createObjectURL(file))
     };
 
-    const handleSubmit =async (e) => {
-        e.preventDefault();
-        try {
-            const formData=new FormData()
-            formData.append("name",name)
-            formData.append("city",city)
-            formData.append("state",state)
-            if(backendImage){
- formData.append("image",backendImage)
-            }
-            formData.append("address",address);
-            const result=await axios.post(`${serverUrl}/api/shop/editshop`,formData,{withCredentials:true})
-            dispatch(setShop(result.data))
-            console.log(result.data)
-        } catch (error) {
-            console.log(error)
-        }
+
+    // In EditShop component
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("city", city);
+    formData.append("state", state);
+    if (backendImage) formData.append("image", backendImage);
+    formData.append("address", address);
+
+    // get token from redux or fallback to localStorage
+    const token = userData?.token || localStorage.getItem("token");
+
+    const result = await axios.post(
+      `${serverUrl}/api/shop/editshop`,
+      formData,
+      {
+        headers: {
+          // DO NOT set Content-Type manually for FormData — browser will set boundary
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        withCredentials: true, // keep if you rely on cookie auth
+      }
+    );
+
+    dispatch(setShop(result.data));
+    console.log("shop saved:", result.data);
+  } catch (error) {
+    // better logging so you see the exact server response
+    console.log("AXIOS ERROR:", error.message);
+    console.log("response data:", error.response?.data);
+    console.log("response status:", error.response?.status);
+  }
+};
+
+
+ //    const handleSubmit =async (e) => {
+ //        e.preventDefault();
+ //        try {
+ //            const formData=new FormData()
+ //            formData.append("name",name)
+ //            formData.append("city",city)
+ //            formData.append("state",state)
+ //            if(backendImage){
+ // formData.append("image",backendImage)
+ //            }
+ //            formData.append("address",address);
+ //            const result=await axios.post(`${serverUrl}/api/shop/editshop`,formData,{withCredentials:true})
+ //            dispatch(setShop(result.data))
+ //            console.log(result.data)
+ //        } catch (error) {
+ //            console.log(error)
+ //        }
         
-    };
+ //    };
 
     return (
         <div className="flex justify-center flex-col items-center p-6 bg-gradient-to-br from-orange-50 relative to-white min-h-screen">
