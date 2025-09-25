@@ -11,11 +11,11 @@ import { setUserData } from "../redux/userSlice";
 
 export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
-  const [role, setRole] = useState("user");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("user");
 
   const dispatch = useDispatch();
 
@@ -24,30 +24,30 @@ export default function SignUp() {
   const bgColor = "#fff9f6";
   const borderColor = "#ddd";
 
-  // -------------------- HANDLE SIGNUP --------------------
+  // ===== NORMAL SIGNUP =====
   const handleSignUp = async () => {
     try {
       const { data } = await axios.post(
         `${serverUrl}/api/auth/signup`,
         { fullName, email, mobile, password, role },
-        { withCredentials: true }
+        { withCredentials: true } // send cookie
       );
 
-      if (data.user && data.token) {
-        dispatch(setUserData(data.user));
-        localStorage.setItem("userData", JSON.stringify(data.user));
-        localStorage.setItem("token", data.token);
-      }
+      // Save user and token
+      dispatch(setUserData(data.user));
+      localStorage.setItem("userData", JSON.stringify(data.user));
+      localStorage.setItem("token", data.token);
     } catch (error) {
-      console.error("Signup error:", error.response?.data || error.message);
+      console.log("AXIOS ERROR:", error.response?.data);
     }
   };
 
-  // -------------------- HANDLE GOOGLE SIGNUP --------------------
+  // ===== GOOGLE SIGNUP =====
   const handleGoogleAuth = async () => {
     try {
       let mobileNumber = mobile || prompt("Please enter your mobile number:");
       const result = await signInWithPopup(auth, provider);
+
       if (result) {
         const { data } = await axios.post(
           `${serverUrl}/api/auth/googleauth`,
@@ -60,14 +60,12 @@ export default function SignUp() {
           { withCredentials: true }
         );
 
-        if (data.user && data.token) {
-          dispatch(setUserData(data.user));
-          localStorage.setItem("userData", JSON.stringify(data.user));
-          localStorage.setItem("token", data.token);
-        }
+        dispatch(setUserData(data.user));
+        localStorage.setItem("userData", JSON.stringify(data.user));
+        localStorage.setItem("token", data.token);
       }
     } catch (error) {
-      console.error("Google signup error:", error.response?.data || error.message);
+      console.log("AXIOS ERROR:", error.response?.data);
     }
   };
 
@@ -75,9 +73,8 @@ export default function SignUp() {
     <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: bgColor }}>
       <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-8" style={{ border: `1px solid ${borderColor}` }}>
         <h1 className="text-3xl font-bold mb-2" style={{ color: primaryColor }}>Food Order & Delivery Web</h1>
-        <p className="text-gray-600 mb-8">Create your account to get started with delicious food deliveries</p>
+        <p className="text-gray-600 mb-8">Create your account to start enjoying delicious food deliveries.</p>
 
-        {/* Full Name */}
         <div className="mb-4">
           <label className="block text-gray-700 font-medium mb-1">Full Name</label>
           <input
@@ -90,7 +87,6 @@ export default function SignUp() {
           />
         </div>
 
-        {/* Email */}
         <div className="mb-4">
           <label className="block text-gray-700 font-medium mb-1">Email</label>
           <input
@@ -103,7 +99,6 @@ export default function SignUp() {
           />
         </div>
 
-        {/* Mobile */}
         <div className="mb-4">
           <label className="block text-gray-700 font-medium mb-1">Mobile Number</label>
           <input
@@ -116,7 +111,6 @@ export default function SignUp() {
           />
         </div>
 
-        {/* Password */}
         <div className="mb-4">
           <label className="block text-gray-700 font-medium mb-1">Password</label>
           <div className="relative">
@@ -134,7 +128,6 @@ export default function SignUp() {
           </div>
         </div>
 
-        {/* Role */}
         <div className="mb-4">
           <label className="block text-gray-700 font-medium mb-1">Role</label>
           <div className="flex gap-2">
@@ -152,7 +145,6 @@ export default function SignUp() {
           </div>
         </div>
 
-        {/* Sign Up Button */}
         <button
           className="w-full font-semibold py-2 rounded-lg transition duration-200"
           style={{ backgroundColor: primaryColor, color: "white" }}
@@ -163,7 +155,6 @@ export default function SignUp() {
           Sign Up
         </button>
 
-        {/* Google Signup */}
         <button
           className="w-full mt-4 flex items-center justify-center gap-2 border rounded-lg px-4 py-2 transition duration-200"
           style={{ borderColor }}
@@ -173,10 +164,8 @@ export default function SignUp() {
           <span className="font-medium text-gray-700">Sign up with Google</span>
         </button>
 
-        {/* Link to Signin */}
         <p className="mt-6 text-center text-gray-600">
-          Already have an account?{" "}
-          <Link to="/signin" className="font-semibold" style={{ color: primaryColor }}>Login</Link>
+          Already have an account? <Link to="/signin" className="font-semibold" style={{ color: primaryColor }}>Login</Link>
         </p>
       </div>
     </div>
