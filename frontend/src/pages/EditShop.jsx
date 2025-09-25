@@ -4,7 +4,6 @@ import { FaUtensils } from "react-icons/fa";
 import { MdKeyboardBackspace } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { serverUrl } from "../App";
 import { setShop } from "../redux/userSlice";
 
 export default function EditShop() {
@@ -12,57 +11,73 @@ export default function EditShop() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Rename "state" to "shopState" to avoid reserved keyword conflict
   const [name, setName] = useState(shop?.name || "");
   const [city, setCity] = useState(shop?.city || "");
   const [shopState, setShopState] = useState(shop?.state || "");
   const [address, setAddress] = useState(shop?.address || "");
   const [frontendImage, setFrontendImage] = useState(shop?.image || "");
   const [backendImage, setBackendImage] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    setBackendImage(file);
-    setFrontendImage(URL.createObjectURL(file));
+    if (file) {
+      setBackendImage(file);
+      setFrontendImage(URL.createObjectURL(file));
+    }
   };
 
+  // ✅ FIXED: Simplified API call - Axios interceptor handles auth automatically
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    if (!name || !city || !address) {
+      setError("Please fill in all required fields");
+      setLoading(false);
+      return;
+    }
+
     try {
       const formData = new FormData();
       formData.append("name", name);
       formData.append("city", city);
-      formData.append("state", shopState); // use renamed variable
+      formData.append("state", shopState);
       formData.append("address", address);
-      if (backendImage) formData.append("image", backendImage);
+      if (backendImage) {
+        formData.append("image", backendImage);
+      }
 
-      // Get token from Redux or localStorage
-      const token = userData?.token || localStorage.getItem("token");
-
-      const result = await axios.post(`${serverUrl}/api/shop/editshop`, formData, {
+      // ✅ SIMPLIFIED: No need to manually set headers - interceptor handles it
+      const result = await axios.post("/api/shop/editshop", formData, {
         headers: {
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          'Content-Type': 'multipart/form-data',
         },
-        withCredentials: true, // keep if you rely on cookie auth
       });
 
-      dispatch(setShop(result.data));
-      console.log("Shop saved:", result.data);
+      dispatch(setShop(result.data.shop || result.data));
+      navigate("/");
+      
     } catch (error) {
-      console.error("AXIOS ERROR:", error.message);
-      console.log("Response data:", error.response?.data);
-      console.log("Response status:", error.response?.status);
+      const errorMessage = error.response?.data?.message || "Failed to save shop";
+      setError(errorMessage);
+      console.error("Shop save error:", error.response?.data || error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="flex justify-center flex-col items-center p-6 bg-gradient-to-br from-orange-50 relative to-white min-h-screen">
-      <div
+      <button
         className="absolute top-[20px] left-[20px] z-[10] mb-[10px]"
         onClick={() => navigate("/")}
       >
         <MdKeyboardBackspace className="w-[25px] h-[25px] text-[#ff4d2d]" />
-      </div>
+      </button>
+      
       <div className="max-w-lg w-full bg-white shadow-xl rounded-2xl p-8 border border-orange-100">
         <div className="flex flex-col items-center mb-6">
           <div className="bg-orange-100 p-4 rounded-full mb-4">
@@ -72,12 +87,19 @@ export default function EditShop() {
             {!shop ? "Add Shop" : "Edit Shop"}
           </h2>
         </div>
+
+        {/* Error Message */}
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+            {error}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Shop Name *</label>
             <input
               type="text"
-              name="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -107,10 +129,9 @@ export default function EditShop() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">City *</label>
               <input
                 type="text"
-                name="city"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
                 required
@@ -123,10 +144,8 @@ export default function EditShop() {
               <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
               <input
                 type="text"
-                name="state"
-                value={shopState} // use renamed variable
+                value={shopState}
                 onChange={(e) => setShopState(e.target.value)}
-                required
                 placeholder="Enter state"
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
               />
@@ -134,9 +153,8 @@ export default function EditShop() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Address *</label>
             <textarea
-              name="address"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               required
@@ -148,13 +166,13 @@ export default function EditShop() {
 
           <button
             type="submit"
-            className="w-full bg-[#ff4d2d] text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-orange-600 hover:shadow-lg transition-all duration-200"
+            disabled={loading}
+            className="w-full bg-[#ff4d2d] text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-orange-600 hover:shadow-lg transition-all duration-200 disabled:opacity-50"
           >
-            Save
+            {loading ? "Saving..." : "Save Shop"}
           </button>
         </form>
       </div>
     </div>
   );
 }
-
