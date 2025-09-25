@@ -20,32 +20,83 @@ import MyDeliveredOrders from "./pages/MyDeliveredOrders";
 import TrackOrderPage from "./pages/TrackOrderPage";
 import ShopItems from "./pages/ShopItems";
 
-import { setSocket } from "./redux/userSlice";
+import { setSocket, setUserData, clearUserData } from "./redux/userSlice";
 
 export const serverUrl = "https://food-order-backend-1-zakd.onrender.com";
 
+// ✅ FIXED: Enhanced Axios Configuration
+axios.defaults.baseURL = serverUrl;
 axios.defaults.withCredentials = true;
+
+// Request interceptor
 axios.interceptors.request.use(config => {
   const token = localStorage.getItem("token");
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
   return config;
+}, error => {
+  return Promise.reject(error);
 });
+
+// ✅ NEW: Response interceptor to handle auth errors
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Token invalid or expired
+      localStorage.removeItem("token");
+      localStorage.removeItem("userData");
+      window.location.href = '/signin';
+    }
+    return Promise.reject(error);
+  }
+);
 
 function App() {
   const dispatch = useDispatch();
   const { userData } = useSelector(state => state.user);
 
+  // ✅ FIXED: Load user data from localStorage on app start
   useEffect(() => {
-    const socketInstance = io(serverUrl, { withCredentials: true });
+    const savedUserData = localStorage.getItem("userData");
+    const savedToken = localStorage.getItem("token");
+    
+    if (savedUserData && savedToken) {
+      try {
+        const userData = JSON.parse(savedUserData);
+        dispatch(setUserData(userData));
+      } catch (error) {
+        console.error("Error parsing saved user data:", error);
+        localStorage.removeItem("userData");
+        localStorage.removeItem("token");
+      }
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    const socketInstance = io(serverUrl, { 
+      withCredentials: true,
+      transports: ['websocket', 'polling']
+    });
+    
     dispatch(setSocket(socketInstance));
 
     socketInstance.on("connect", () => {
       console.log("Socket connected:", socketInstance.id);
-      if (userData?._id) socketInstance.emit("identify", { userId: userData._id });
+      if (userData?._id) {
+        socketInstance.emit("identify", { userId: userData._id });
+      }
     });
 
-    return () => socketInstance.disconnect();
-  }, [userData?._id]);
+    socketInstance.on("disconnect", () => {
+      console.log("Socket disconnected");
+    });
+
+    return () => {
+      socketInstance.disconnect();
+    };
+  }, [dispatch, userData?._id]);
 
   return (
     <Routes>
