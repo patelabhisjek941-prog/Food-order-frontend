@@ -14,13 +14,14 @@ export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const dispatch = useDispatch();
+
   const primaryColor = "#ff4d2d";
   const hoverColor = "#e64323";
   const bgColor = "#fff9f6";
   const borderColor = "#ddd";
 
-  const dispatch = useDispatch();
-
+  // -------------------- HANDLE NORMAL SIGNIN --------------------
   const handleSignIn = async () => {
     try {
       const { data } = await axios.post(
@@ -28,14 +29,18 @@ export default function SignIn() {
         { email, password },
         { withCredentials: true }
       );
-      dispatch(setUserData(data));
-      localStorage.setItem("userData", JSON.stringify(data));
-      if (data.token) localStorage.setItem("token", data.token);
+
+      if (data.user && data.token) {
+        dispatch(setUserData(data.user));
+        localStorage.setItem("userData", JSON.stringify(data.user));
+        localStorage.setItem("token", data.token);
+      }
     } catch (error) {
-      console.log(error);
+      console.error("Signin error:", error.response?.data || error.message);
     }
   };
 
+  // -------------------- HANDLE GOOGLE SIGNIN --------------------
   const handleGoogleAuth = async () => {
     try {
       const result = await signInWithPopup(auth, provider);
@@ -45,12 +50,15 @@ export default function SignIn() {
           { email: result.user.email },
           { withCredentials: true }
         );
-        dispatch(setUserData(data));
-        localStorage.setItem("userData", JSON.stringify(data));
-        if (data.token) localStorage.setItem("token", data.token);
+
+        if (data.user && data.token) {
+          dispatch(setUserData(data.user));
+          localStorage.setItem("userData", JSON.stringify(data.user));
+          localStorage.setItem("token", data.token);
+        }
       }
     } catch (error) {
-      console.log(error);
+      console.error("Google signin error:", error.response?.data || error.message);
     }
   };
 
@@ -62,6 +70,7 @@ export default function SignIn() {
         </h1>
         <p className="text-gray-600 mb-8">Welcome back! Please sign in to continue enjoying delicious food deliveries.</p>
 
+        {/* Email Input */}
         <div className="mb-4">
           <label className="block text-gray-700 font-medium mb-1">Email</label>
           <input
@@ -74,6 +83,7 @@ export default function SignIn() {
           />
         </div>
 
+        {/* Password Input */}
         <div className="mb-2">
           <label className="block text-gray-700 font-medium mb-1">Password</label>
           <div className="relative">
@@ -91,12 +101,14 @@ export default function SignIn() {
           </div>
         </div>
 
+        {/* Forgot Password */}
         <div className="text-right mb-4">
           <Link to="/forgot-password" style={{ color: primaryColor }} className="text-sm font-medium hover:underline">
             Forgot Password?
           </Link>
         </div>
 
+        {/* Sign In Button */}
         <button
           className="w-full font-semibold py-2 rounded-lg transition duration-200"
           style={{ backgroundColor: primaryColor, color: "white" }}
@@ -107,6 +119,7 @@ export default function SignIn() {
           Sign In
         </button>
 
+        {/* Google Sign In */}
         <button
           className="w-full mt-4 flex items-center justify-center gap-2 border rounded-lg px-4 py-2 transition duration-200"
           style={{ borderColor }}
@@ -116,6 +129,7 @@ export default function SignIn() {
           <span className="font-medium text-gray-700">Sign in with Google</span>
         </button>
 
+        {/* Link to Signup */}
         <p className="mt-6 text-center text-gray-600">
           Don’t have an account?{" "}
           <Link to="/signup" className="font-semibold" style={{ color: primaryColor }}>
