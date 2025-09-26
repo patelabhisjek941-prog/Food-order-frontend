@@ -103,7 +103,8 @@ function App() {
       <Route path="/signup" element={!userData ? <SignUp /> : <Navigate to="/" />} />
       <Route path="/signin" element={!userData ? <SignIn /> : <Navigate to="/" />} />
       <Route path="/forgot-password" element={!userData ? <ForgotPassword /> : <Navigate to="/" />} />
-      <Route path="/" element={userData ? <Home /> : <Navigate to="/signin" />} />
+      {/* <Route path="/" element={userData ? <Home /> : <Navigate to="/signin" />} /> */}
+      <Route path='/' element={userData?<Home/>:<Navigate to={"/signin"}/>}/>
       <Route path="/editshop" element={userData ? <EditShop /> : <Navigate to="/signin" />} />
       <Route path="/additem" element={userData ? <AddItem /> : <Navigate to="/signin" />} />
       <Route path="/edititem/:itemId" element={userData ? <EditItem /> : <Navigate to="/signin" />} />
