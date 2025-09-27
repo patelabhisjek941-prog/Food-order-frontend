@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { io } from "socket.io-client";
 
+// Pages
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -20,31 +21,26 @@ import MyDeliveredOrders from "./pages/MyDeliveredOrders";
 import TrackOrderPage from "./pages/TrackOrderPage";
 import ShopItems from "./pages/ShopItems";
 
-import { setSocket, setUserData, clearUserData } from "./redux/userSlice";
+import { setSocket, setUserData } from "./redux/userSlice";
 
-export const serverUrl = "https://food-order-backend-1-zakd.onrender.com";
+export const serverUrl = process.env.VITE_SERVER_URL || "http://localhost:8000";
 
-// ✅ FIXED: Enhanced Axios Configuration
+// Axios configuration
 axios.defaults.baseURL = serverUrl;
 axios.defaults.withCredentials = true;
 
-// Request interceptor
 axios.interceptors.request.use(config => {
   const token = localStorage.getItem("token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
-}, error => {
-  return Promise.reject(error);
 });
 
-// ✅ NEW: Response interceptor to handle auth errors
 axios.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Token invalid or expired
       localStorage.removeItem("token");
       localStorage.removeItem("userData");
       window.location.href = '/signin';
@@ -57,7 +53,6 @@ function App() {
   const dispatch = useDispatch();
   const { userData } = useSelector(state => state.user);
 
-  // ✅ FIXED: Load user data from localStorage on app start
   useEffect(() => {
     const savedUserData = localStorage.getItem("userData");
     const savedToken = localStorage.getItem("token");
@@ -67,7 +62,6 @@ function App() {
         const userData = JSON.parse(savedUserData);
         dispatch(setUserData(userData));
       } catch (error) {
-        console.error("Error parsing saved user data:", error);
         localStorage.removeItem("userData");
         localStorage.removeItem("token");
       }
@@ -75,6 +69,8 @@ function App() {
   }, [dispatch]);
 
   useEffect(() => {
+    if (!userData?._id) return;
+
     const socketInstance = io(serverUrl, { 
       withCredentials: true,
       transports: ['websocket', 'polling']
@@ -83,14 +79,7 @@ function App() {
     dispatch(setSocket(socketInstance));
 
     socketInstance.on("connect", () => {
-      console.log("Socket connected:", socketInstance.id);
-      if (userData?._id) {
-        socketInstance.emit("identify", { userId: userData._id });
-      }
-    });
-
-    socketInstance.on("disconnect", () => {
-      console.log("Socket disconnected");
+      socketInstance.emit("identify", { userId: userData._id });
     });
 
     return () => {
@@ -103,8 +92,8 @@ function App() {
       <Route path="/signup" element={!userData ? <SignUp /> : <Navigate to="/" />} />
       <Route path="/signin" element={!userData ? <SignIn /> : <Navigate to="/" />} />
       <Route path="/forgot-password" element={!userData ? <ForgotPassword /> : <Navigate to="/" />} />
-      {/* <Route path="/" element={userData ? <Home /> : <Navigate to="/signin" />} /> */}
-      <Route path='/' element={userData?<Home/>:<Navigate to={"/signin"}/>}/>
+      
+      <Route path="/" element={userData ? <Home /> : <Navigate to="/signin" />} />
       <Route path="/editshop" element={userData ? <EditShop /> : <Navigate to="/signin" />} />
       <Route path="/additem" element={userData ? <AddItem /> : <Navigate to="/signin" />} />
       <Route path="/edititem/:itemId" element={userData ? <EditItem /> : <Navigate to="/signin" />} />
