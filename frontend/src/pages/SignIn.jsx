@@ -37,21 +37,20 @@ export default function SignIn() {
     }
 
     try {
-      const { data } = await axios.post(
-        "/api/auth/signin",
-        { email, password }
-      );
+      const { data } = await axios.post("/api/auth/signin", {
+        email,
+        password,
+      });
 
-      if (data.user && data.token) {
+      if (data.user) {
         dispatch(setUserData(data.user));
         localStorage.setItem("userData", JSON.stringify(data.user));
-        localStorage.setItem("token", data.token);
+        localStorage.setItem("token", data.user.token);
         navigate("/");
       }
     } catch (error) {
-      const errorMessage = error.response?.data?.message || "Signin failed. Please try again.";
+      const errorMessage = error.response?.data?.message || "Signin failed";
       setError(errorMessage);
-      console.error("Signin error:", error.response?.data || error.message);
     } finally {
       setLoading(false);
     }
