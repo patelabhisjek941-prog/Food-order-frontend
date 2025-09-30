@@ -37,7 +37,7 @@ export default function EditShop() {
                 formData.append("image", backendImage)
             }
             formData.append("address", address);
-            const result = await axios.post(`${serverUrl}/api/shop/EditShop`, formData, { withCredentials: true })
+            const result = await axios.post(`${serverUrl}/api/shop/editshop`, formData, { withCredentials: true })
             dispatch(setShop(result.data))
             console.log(result.data)
         } catch (error) {
