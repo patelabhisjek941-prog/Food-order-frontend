@@ -27,32 +27,53 @@ export default function EditShop() {
     const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-        const formData = new FormData()
-        formData.append("name", name)
-        formData.append("city", city)
-        formData.append("state", state)
-        formData.append("address", address)
+        // 1️⃣ Prepare FormData
+        const formData = new FormData();
+        formData.append("name", name);
+        formData.append("city", city);
+        formData.append("state", state);
+        formData.append("address", address);
         if (backendImage) {
-            formData.append("image", backendImage)
+            formData.append("image", backendImage);
         }
-        // If backend needs shop ID
-        formData.append("shopId", shop?._id)
+        // Include shop ID if backend requires it
+        if (shop?._id) formData.append("shopId", shop._id);
 
+        // 2️⃣ Get token from Redux or wherever you store it
+        const token = userData?.token;
+        if (!token) {
+            console.log("No token found! Please login first.");
+            return;
+        }
+
+        // 3️⃣ Send POST request with Authorization header
         const result = await axios.post(
             `${serverUrl}/api/shop/editshop`,
             formData,
             {
-                withCredentials: true,
-                // DON'T set Content-Type manually for FormData
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
             }
-        )
-        dispatch(setShop(result.data))
-        console.log("Updated shop:", result.data)
-        navigate("/") // redirect after success
+        );
+
+        // 4️⃣ Update Redux state
+        dispatch(setShop(result.data));
+        console.log("Shop updated successfully:", result.data);
+
+        // 5️⃣ Navigate back to home or shop page
+        navigate("/");
+
     } catch (error) {
-        console.log("Edit shop error:", error.response?.data || error.message)
+        // 6️⃣ Log backend validation or auth errors clearly
+        console.error(
+            "Edit shop error:",
+            error.response?.data || error.message
+        );
+        alert(error.response?.data?.message || "Something went wrong!");
     }
 };
+
 
 
     // const handleSubmit = async (e) => {
