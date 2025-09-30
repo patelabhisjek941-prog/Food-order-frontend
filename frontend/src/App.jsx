@@ -84,7 +84,6 @@
 
 // export default App
 
-
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Navigate, Route, Routes } from 'react-router-dom'
@@ -106,7 +105,7 @@ import PendingOrders from './pages/PendingOrders'
 import ShopItems from './pages/ShopItems'
 import TrackOrderPage from './pages/TrackOrderPage'
 
-import { setUserData, setShop } from './redux/userSlice'
+import { setUserData, setShop, setSocket } from './redux/userSlice'
 import { io } from 'socket.io-client'
 
 export const serverUrl = import.meta.env.VITE_SERVER_URL;
@@ -132,7 +131,7 @@ function App() {
 
   // Socket connection
   useEffect(() => {
-    if(!userData?._id) return;
+    if (!userData?._id || socket) return; // Prevent multiple socket instances
 
     const socketInstance = io(serverUrl, { withCredentials: true });
     dispatch(setSocket(socketInstance));
@@ -142,8 +141,11 @@ function App() {
       socketInstance.emit("identify", { userId: userData._id });
     });
 
-    return () => socketInstance.disconnect();
-  }, [userData?._id, dispatch]);
+    return () => {
+      socketInstance.disconnect();
+      dispatch(setSocket(null));
+    };
+  }, [userData?._id, socket, dispatch]);
 
   return (
     <Routes>
@@ -167,4 +169,5 @@ function App() {
 }
 
 export default App
+
 
