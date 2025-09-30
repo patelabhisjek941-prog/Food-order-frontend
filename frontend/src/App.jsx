@@ -19,7 +19,9 @@ import updateLocation from './hooks/updateLocation'
 import AddItem from './pages/AddItem'
 import CartPage from './pages/CartPage'
 import CheckoutPage from './pages/CheckoutPage'
-import EditItem from './pages/editItem'
+import EditItem from "./pages/EditItem";
+
+// import EditItem from './pages/editItem'
 import MyDeliveredOrders from './pages/MyDeliveredOrders'
 import MyOrders from './pages/MyOrders'
 import OrderPlaced from './pages/OrderPlaced'
