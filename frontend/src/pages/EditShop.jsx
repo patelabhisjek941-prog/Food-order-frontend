@@ -24,77 +24,27 @@ export default function EditShop() {
     };
 
 
+
+
     const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-        // 1️⃣ Prepare FormData
-        const formData = new FormData();
-        formData.append("name", name);
-        formData.append("city", city);
-        formData.append("state", state);
-        formData.append("address", address);
-        if (backendImage) {
-            formData.append("image", backendImage);
-        }
-        // Include shop ID if backend requires it
-        if (shop?._id) formData.append("shopId", shop._id);
-
-        // 2️⃣ Get token from Redux or wherever you store it
-        const token = userData?.token;
-        if (!token) {
-            console.log("No token found! Please login first.");
-            return;
-        }
-
-        // 3️⃣ Send POST request with Authorization header
-        const result = await axios.post(
-            `${serverUrl}/api/shop/editshop`,
-            formData,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+        e.preventDefault();
+        try {
+            const formData = new FormData()
+            formData.append("name", name)
+            formData.append("city", city)
+            formData.append("state", state)
+            if (backendImage) {
+                formData.append("image", backendImage)
             }
-        );
+            formData.append("address", address);
+            const result = await axios.post(`${serverUrl}/api/shop/editshop`, formData, { withCredentials: true })
+            dispatch(setShop(result.data))
+            console.log(result.data)
+        } catch (error) {
+            console.log(error)
+        }
 
-        // 4️⃣ Update Redux state
-        dispatch(setShop(result.data));
-        console.log("Shop updated successfully:", result.data);
-
-        // 5️⃣ Navigate back to home or shop page
-        navigate("/");
-
-    } catch (error) {
-        // 6️⃣ Log backend validation or auth errors clearly
-        console.error(
-            "Edit shop error:",
-            error.response?.data || error.message
-        );
-        alert(error.response?.data?.message || "Something went wrong!");
-    }
-};
-
-
-
-    // const handleSubmit = async (e) => {
-    //     e.preventDefault();
-    //     try {
-    //         const formData = new FormData()
-    //         formData.append("name", name)
-    //         formData.append("city", city)
-    //         formData.append("state", state)
-    //         if (backendImage) {
-    //             formData.append("image", backendImage)
-    //         }
-    //         formData.append("address", address);
-    //         const result = await axios.post(`${serverUrl}/api/shop/editshop`, formData, { withCredentials: true })
-    //         dispatch(setShop(result.data))
-    //         console.log(result.data)
-    //     } catch (error) {
-    //         console.log(error)
-    //     }
-
-    // };
+    };
 
     return (
         <div className="flex justify-center flex-col items-center p-6 bg-gradient-to-br from-orange-50 relative to-white min-h-screen">
