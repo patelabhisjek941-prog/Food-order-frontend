@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import UserDashboard from "../components/UserDashboard";
 
 
-import DeliveryBoy from '../components/deliveryBoy';
+import DeliveryBoy from '../components/DeliveryBoy';
 import Footer from '../components/Footer';
 import OwnerDashboard from '../components/OwnerDashboard';
 function Home() {
