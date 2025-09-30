@@ -23,25 +23,57 @@ export default function EditShop() {
         setFrontendImage(URL.createObjectURL(file))
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const formData = new FormData()
-            formData.append("name", name)
-            formData.append("city", city)
-            formData.append("state", state)
-            if (backendImage) {
-                formData.append("image", backendImage)
-            }
-            formData.append("address", address);
-            const result = await axios.post(`${serverUrl}/api/shop/editshop`, formData, { withCredentials: true })
-            dispatch(setShop(result.data))
-            console.log(result.data)
-        } catch (error) {
-            console.log(error)
-        }
 
-    };
+    const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+        const formData = new FormData()
+        formData.append("name", name)
+        formData.append("city", city)
+        formData.append("state", state)
+        formData.append("address", address)
+        if (backendImage) {
+            formData.append("image", backendImage)
+        }
+        // If backend needs shop ID
+        formData.append("shopId", shop?._id)
+
+        const result = await axios.post(
+            `${serverUrl}/api/shop/editshop`,
+            formData,
+            {
+                withCredentials: true,
+                // DON'T set Content-Type manually for FormData
+            }
+        )
+        dispatch(setShop(result.data))
+        console.log("Updated shop:", result.data)
+        navigate("/") // redirect after success
+    } catch (error) {
+        console.log("Edit shop error:", error.response?.data || error.message)
+    }
+};
+
+
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
+    //     try {
+    //         const formData = new FormData()
+    //         formData.append("name", name)
+    //         formData.append("city", city)
+    //         formData.append("state", state)
+    //         if (backendImage) {
+    //             formData.append("image", backendImage)
+    //         }
+    //         formData.append("address", address);
+    //         const result = await axios.post(`${serverUrl}/api/shop/editshop`, formData, { withCredentials: true })
+    //         dispatch(setShop(result.data))
+    //         console.log(result.data)
+    //     } catch (error) {
+    //         console.log(error)
+    //     }
+
+    // };
 
     return (
         <div className="flex justify-center flex-col items-center p-6 bg-gradient-to-br from-orange-50 relative to-white min-h-screen">
